@@ -5,7 +5,7 @@
 
 #include "../boot/helpers.h"
 #include "../boot/multiboot2.h"
-#include "gdt.h"
+#include "../cpu/gdt.h"
 
 #include <stdbool.h>
 #include <stdint.h>

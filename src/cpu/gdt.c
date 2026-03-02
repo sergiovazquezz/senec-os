@@ -62,6 +62,8 @@ static inline void gdt_reload_segments()
 
 static inline void tss_load() { asm("ltr %0" : : "r"((uint16_t)0x28)); }
 
+void tss_init() {}
+
 void gdt_init()
 {
     gdt_create();

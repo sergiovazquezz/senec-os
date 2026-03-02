@@ -13,7 +13,7 @@ COMMON_FLAGS := -ffreestanding -fno-builtin -nostdinc \
 				-masm=intel \
 				-Wall -Wextra -g -gdwarf-4
 RELEASE_FLAGS := $(COMMON_FLAGS) -O2
-DEBUG_FLAGS   := $(COMMON_FLAGS) -O0
+DEBUG_FLAGS   := $(COMMON_FLAGS) -O0 -fanalyzer
 CFLAGS  := $(DEBUG_FLAGS) -std=gnu17 -MMD -MP
 ASFLAGS := $(DEBUG_FLAGS) -x assembler-with-cpp -MMD -MP
 LDFLAGS := -T src/kernel.ld -nostdlib
