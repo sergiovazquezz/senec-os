@@ -1,0 +1,44 @@
+# [default_config]
+# assembler = "nasm"
+# instruction_set = "x86/x86-64"
+#
+# [default_config.opts]
+# compiler = "nasm"
+# compile_flags_txt = ["-fbin"]
+# diagnostics = true
+# default_diagnostics = false
+#
+# [[project]]
+# path = "src/boot"
+# assembler = "nasm"
+# instruction_set = "x86/x86-64"
+#
+# [project.opts]
+# compiler = "nasm"
+# compile_flags_txt = ["-fbin"]
+# diagnostics = true
+# default_diagnostics = false
+
+
+[default_config]
+assembler = "gas"
+instruction_set = "x86/x86-64"
+
+[opts]
+compiler = "gcc"
+diagnostics = true
+default_diagnostics = false
+
+[[project]]
+path = "src/boot"
+assembler = "gas"
+instruction_set = "x86/x86-64"
+
+[project.opts]
+compiler = "gcc"
+compile_flags_txt = [
+  "-x", "assembler-with-cpp",
+  "-masm=intel",
+]
+diagnostics = true
+default_diagnostics = false

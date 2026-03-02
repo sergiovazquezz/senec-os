@@ -1,0 +1,27 @@
+# Build output
+build/
+kernel.elf
+kernel.iso
+
+# Generated ISO boot directory
+iso/boot/
+
+# Clangd / compile commands
+compile_commands.json
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+.cache/
+docs/
+logs/
+*.obj*
+.clangd
