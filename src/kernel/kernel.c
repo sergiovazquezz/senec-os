@@ -5,6 +5,7 @@
 
 #include "../boot/helpers.h"
 #include "../boot/multiboot2.h"
+#include "gdt.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -27,6 +28,8 @@ void kmain(uint32_t magic, void* mboot_info)
     if (magic == MULTIBOOT2_BOOTLOADER_MAGIC) {
         parse_multiboot2(mboot_info);
     }
+
+    gdt_init();
 
     while (true) {
         asm volatile("hlt");
