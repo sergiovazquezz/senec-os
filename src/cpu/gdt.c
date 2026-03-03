@@ -1,8 +1,8 @@
 #include "gdt.h"
 #include <stdint.h>
 
-static gdt_t gdt;
 static tss_t tss;
+static gdt_t gdt;
 
 static uint64_t tss_descriptor_low(uint64_t base, uint32_t limit)
 {
@@ -57,6 +57,13 @@ static void gdt_reload_segments()
         : "r"((uint16_t)0x10));
 }
 
+void tss_init()
+{
+    static uint8_t kstack[4096];
+    tss.rsp0 = (uint64_t)(kstack + sizeof(kstack));
+    tss.io_map_base_addr = sizeof(tss_t);
+}
+
 static void tss_load() { asm("ltr %0" : : "r"((uint16_t)0x28)); }
 
 void gdt_init()
@@ -70,11 +77,4 @@ void gdt_init()
 
     gdt_reload_segments();
     tss_load();
-}
-
-void tss_init()
-{
-    static uint8_t kstack[4096];
-    tss.rsp0 = (uint64_t)(kstack + sizeof(kstack));
-    tss.io_map_base_addr = sizeof(tss_t);
 }

@@ -30,7 +30,7 @@ diagnostics = true
 default_diagnostics = false
 
 [[project]]
-path = "src/boot"
+path = "src"
 assembler = "gas"
 instruction_set = "x86/x86-64"
 

@@ -6,6 +6,7 @@
 #include "../boot/helpers.h"
 #include "../boot/multiboot2.h"
 #include "../cpu/gdt.h"
+#include "../cpu/idt.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,11 +30,14 @@ void kmain(uint32_t magic, void* mboot_info)
         parse_multiboot2(mboot_info);
     }
 
-    gdt_init();
-
     tss_init();
 
-    while (true) {
+    gdt_init();
+
+    idt_init();
+
+    asm volatile("sti");
+
+    while (true)
         asm volatile("hlt");
-    }
 }
