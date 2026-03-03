@@ -2,7 +2,6 @@
 #include <stdint.h>
 
 static gdt_t gdt;
-static gdtr_t gdtr;
 static tss_t tss;
 
 static uint64_t tss_descriptor_low(uint64_t base, uint32_t limit)
@@ -38,9 +37,7 @@ static void gdt_create()
     gdt.tss_high = tss_descriptor_high(base);
 }
 
-static inline void gdt_load() { asm("lgdt %0" : : "m"(gdtr)); }
-
-static inline void gdt_reload_segments()
+static void gdt_reload_segments()
 {
     asm("push %0\n"
         "lea rax, [rip + 1f]\n"
@@ -60,18 +57,24 @@ static inline void gdt_reload_segments()
         : "r"((uint16_t)0x10));
 }
 
-static inline void tss_load() { asm("ltr %0" : : "r"((uint16_t)0x28)); }
-
-void tss_init() {}
+static void tss_load() { asm("ltr %0" : : "r"((uint16_t)0x28)); }
 
 void gdt_init()
 {
     gdt_create();
 
-    gdtr.limit = sizeof(gdt_t) - 1;
-    gdtr.address = (uint64_t)&gdt;
+    const gdtr_t gdtr = { .limit = sizeof(gdt_t) - 1,
+                          .address = (uint64_t)&gdt };
 
-    gdt_load();
+    asm("lgdt %0" : : "m"(gdtr));
+
     gdt_reload_segments();
     tss_load();
+}
+
+void tss_init()
+{
+    static uint8_t kstack[4096];
+    tss.rsp0 = (uint64_t)(kstack + sizeof(kstack));
+    tss.io_map_base_addr = sizeof(tss_t);
 }

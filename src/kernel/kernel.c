@@ -31,6 +31,8 @@ void kmain(uint32_t magic, void* mboot_info)
 
     gdt_init();
 
+    tss_init();
+
     while (true) {
         asm volatile("hlt");
     }

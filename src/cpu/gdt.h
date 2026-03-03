@@ -32,6 +32,7 @@ typedef struct {
     uint64_t address;
 } __attribute__((packed)) gdtr_t;
 
+void tss_init();
 void gdt_init();
 
 #endif // KERNEL_GDT_H
