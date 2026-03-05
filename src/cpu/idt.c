@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "../drivers/serial.h"
+#include "../drivers/printk.h"
 #include "cpu.h"
 
 #include <stddef.h>
@@ -7,7 +7,7 @@
 
 static idt_t idt[IDT_SIZE];
 
-extern const uintptr_t interrupt_handlers[];
+extern const uintptr_t interrupt_handlers[IDT_NUM_HANDLERS];
 
 static void idt_set_entry(uint8_t vector, uintptr_t handler_addr, uint8_t dpl)
 {
@@ -19,17 +19,15 @@ static void idt_set_entry(uint8_t vector, uintptr_t handler_addr, uint8_t dpl)
 
     entry->selector = 0x08;
 
-    entry->flags =
-        INTERRUPT_GATE | ((dpl & 0b11) << 5) | IDT_ENTRY_FLAG_PRESENT;
+    entry->flags = INTERRUPT_GATE | ((dpl & 0b11) << 5) | IDT_ENTRY_FLAG_PRESENT;
 
     entry->ist = 0;
 }
 
 void idt_init()
 {
-    for (size_t i = 0; i < 32; i++) {
+    for (size_t i = 0; i < IDT_NUM_HANDLERS; i++)
         idt_set_entry(i, interrupt_handlers[i], 0);
-    }
 
     const idtr_t idtr = { .limit = sizeof(idt) - 1, .address = (uint64_t)idt };
 
@@ -73,30 +71,19 @@ void interrupt_dispatch(cpu_status_t* cpu_status)
 {
     uint64_t vec_num = cpu_status->vector_number;
 
-    const char* vec_name =
-        (vec_num < 32) ? exception_names[vec_num] : "Unknown";
+    const char* vec_name = (vec_num < 32) ? exception_names[vec_num] : "Unknown";
 
-    serial_puts("\n=== EXCEPTION ===\n");
-    serial_puts("Vector: ");
-    serial_putd(vec_num);
-    serial_puts(" - ");
-    serial_puts(vec_name);
-    serial_puts("\n");
+    printk("\n=== EXCEPTION ===\n");
+    printk("Vector: %d - %s\n", vec_num, vec_name);
 
-    serial_puts("Error: ");
-    serial_puth(cpu_status->error_code);
-    serial_puts("\n");
+    printk("Error: %p\n", cpu_status->error_code);
 
-    serial_puts("RIP: ");
-    serial_puth(cpu_status->iret_rip);
-    serial_puts("\n");
+    printk("RIP: %p\n", cpu_status->iret_rip);
 
-    serial_puts("RSP: ");
-    serial_puth(cpu_status->iret_rsp);
-    serial_puts("\n");
+    printk("RSP: %p\n", cpu_status->iret_rsp);
 
-    serial_puts("=================\n");
-    serial_puts("Halting.\n");
+    printk("=================\n");
+    printk("Halting.\n");
 
     for (;;)
         asm volatile("hlt");

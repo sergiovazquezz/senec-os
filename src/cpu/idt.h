@@ -4,12 +4,14 @@
 #include <stdint.h>
 
 // Clears interrupt flag before running handler (disables nested interrupts)
-#define INTERRUPT_GATE 0b1110
+#define INTERRUPT_GATE         0b1110
 // Does not clear interrupt flag (nested interrupts can happen)
-#define TRAP_GATE 0b1111
+#define TRAP_GATE              0b1111
 
-#define IDT_SIZE 256
+#define IDT_SIZE               256
 #define IDT_ENTRY_FLAG_PRESENT (1 << 7)
+
+#define IDT_NUM_HANDLERS       32
 
 typedef struct {
     uint16_t address_low;

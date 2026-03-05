@@ -1,7 +1,7 @@
 #include "string.h"
 
-__attribute__((__optimize__("-fno-tree-loop-distribute-patterns"))) void*
-memset(void* dest, int c, size_t n)
+__attribute__((__optimize__("-fno-tree-loop-distribute-patterns"))) void* memset(void* dest, int c,
+                                                                                 size_t n)
 {
     unsigned char* p = (unsigned char*)dest;
 

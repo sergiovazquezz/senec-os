@@ -1,12 +1,12 @@
-#ifndef DRIVERS_TERMINAL_H
-#define DRIVERS_TERMINAL_H
+#ifndef DRIVERS_VGA_H
+#define DRIVERS_VGA_H
 
 #include "../boot/constants.h"
 
 #include <stddef.h>
 
-#define VGA_WIDTH 80
-#define VGA_HEIGHT 25
+#define VGA_WIDTH     80
+#define VGA_HEIGHT    25
 #define VGA_MEMORY_VA (KERNEL_VMA + 0xB8000ULL)
 
 enum vga_color {
@@ -28,7 +28,8 @@ enum vga_color {
     VGA_COLOR_WHITE = 15,
 };
 
-void terminal_init();
-void terminal_write_string(const char* data);
+void vga_init();
+void vga_putc(char c);
+void vga_puts(const char* data);
 
-#endif // DRIVERS_TERMINAL_H
+#endif // DRIVERS_VGA_H

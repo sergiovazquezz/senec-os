@@ -3,7 +3,7 @@ IndentWidth: 4
 UseTab: Never
 TabWidth: 4
 BreakBeforeBraces: Linux # Attach
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: Empty
 Cpp11BracedListStyle: false
 SpaceBeforeCpp11BracedList: false
 AccessModifierOffset: -4
@@ -15,3 +15,8 @@ BreakTemplateDeclarations: Yes
 AlwaysBreakAfterReturnType: None
 BreakAfterReturnType: None
 BreakAfterAttributes: Always
+ColumnLimit: 110
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true

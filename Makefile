@@ -11,7 +11,7 @@ COMMON_FLAGS := -ffreestanding -fno-builtin -nostdinc \
 				-fno-stack-protector -mno-red-zone -mcmodel=kernel \
 				-mno-sse -mno-mmx -mno-sse2 \
 				-masm=intel \
-				-Wall -Wextra -g -gdwarf-4
+				-Wall -Wextra -Werror -g -gdwarf-4
 RELEASE_FLAGS := $(COMMON_FLAGS) -O2
 DEBUG_FLAGS   := $(COMMON_FLAGS) -O0 -fanalyzer
 CFLAGS  := $(DEBUG_FLAGS) -std=gnu17 -MMD -MP
@@ -34,6 +34,7 @@ ALL_OBJS := $(S_OBJS) $(C_OBJS)
 QEMU := qemu-system-x86_64
 QEMU_KILL = ss -tlnp | grep :1235 | awk '{match($$0,/pid=([0-9]+)/,a); if(a[1]) print a[1]}' | xargs -r kill 2>/dev/null; true
 QEMU_BASE := -drive file=kernel.iso,format=raw \
+	-machine q35 \
 	-m 512M \
 	-cpu host \
 	-enable-kvm
