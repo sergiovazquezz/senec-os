@@ -6,6 +6,11 @@
 
 #define COM1 0x3F8
 
+static inline void outb(uint16_t port, uint8_t value)
+{
+    asm volatile("out dx, al" : : "a"(value), "d"(port));
+}
+
 void serial_init();
 void serial_putc(char c);
 void serial_puts(const char* str);

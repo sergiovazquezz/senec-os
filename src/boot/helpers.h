@@ -1,10 +1,12 @@
 #ifndef MULTIBOOT_HELPERS_H
 #define MULTIBOOT_HELPERS_H
 
+#include "../cpu/acpi.h"
 #include "multiboot2.h"
+
 #include <stdint.h>
 
-void parse_multiboot2(void* mbi);
+rsdp_t parse_multiboot2(void* mbi);
 
 static inline struct multiboot_tag* mb2_first_tag(void* mbi)
 {
