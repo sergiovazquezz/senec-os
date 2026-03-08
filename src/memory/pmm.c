@@ -8,21 +8,21 @@
 #include <stdint.h>
 
 static uint8_t* bitmap;
-static uint64_t total_pages;
+static uint64_t total_frames;
 
-static inline void bitmap_set(uint64_t page)
+static inline void bitmap_set(uint64_t frame)
 {
-    bitmap[page / 8] |= (uint8_t)(1 << (page % 8));
+    bitmap[frame / 8] |= (uint8_t)(1 << (frame % 8));
 }
 
-static inline void bitmap_clear(uint64_t page)
+static inline void bitmap_clear(uint64_t frame)
 {
-    bitmap[page / 8] &= (uint8_t)~(1 << (page % 8));
+    bitmap[frame / 8] &= (uint8_t)~(1 << (frame % 8));
 }
 
-static inline bool bitmap_is_page_used(uint64_t page)
+static inline bool bitmap_is_frame_used(uint64_t frame)
 {
-    return (bitmap[page / 8] >> (page % 8)) & 1;
+    return (bitmap[frame / 8] >> (frame % 8)) & 1;
 }
 
 extern uint8_t __kernel_end;
@@ -49,8 +49,8 @@ void pmm_init(const mm_entry_t entries[], uint32_t count)
             max_addr = end;
     }
 
-    total_pages = (max_addr + PAGE_SIZE - 1) / PAGE_SIZE;
-    const uint64_t bitmap_bytes = (total_pages + 7) / 8;
+    total_frames = (max_addr + PAGE_SIZE - 1) / PAGE_SIZE;
+    const uint64_t bitmap_bytes = (total_frames + 7) / 8;
 
     bump = (uintptr_t)&__kernel_end;
     bump = (bump + PAGE_SIZE - 1) & ~(uintptr_t)(PAGE_SIZE - 1);
@@ -67,28 +67,28 @@ void pmm_init(const mm_entry_t entries[], uint32_t count)
         const uintptr_t start = entries[i].addr;
         const uintptr_t end = entries[i].addr + entries[i].len;
 
-        const uint64_t first_page = (start + PAGE_SIZE - 1) / PAGE_SIZE;
-        const uint64_t last_page = end / PAGE_SIZE;
+        const uint64_t first_frame = (start + PAGE_SIZE - 1) / PAGE_SIZE;
+        const uint64_t last_frame = end / PAGE_SIZE;
 
-        for (uint64_t p = first_page; p < last_page; p++)
-            bitmap_clear(p);
+        for (uint64_t f = first_frame; f < last_frame; f++)
+            bitmap_clear(f);
     }
 
-    const uint64_t kernel_first_page = 0x100000 / PAGE_SIZE;
-    const uint64_t kernel_last_page = (bump + PAGE_SIZE - 1) / PAGE_SIZE;
+    const uint64_t kernel_first_frame = 0x100000 / PAGE_SIZE;
+    const uint64_t kernel_last_frame = (bump + PAGE_SIZE - 1) / PAGE_SIZE;
 
-    for (uint64_t p = kernel_first_page; p < kernel_last_page; p++)
-        bitmap_set(p);
+    for (uint64_t f = kernel_first_frame; f < kernel_last_frame; f++)
+        bitmap_set(f);
 
     bitmap_set(0);
 }
 
 void* pmm_alloc_frame()
 {
-    for (size_t p = 1; p < total_pages; p++) {
-        if (!bitmap_is_page_used(p)) {
-            bitmap_set(p);
-            return (void*)(uintptr_t)(p * PAGE_SIZE);
+    for (size_t f = 1; f < total_frames; f++) {
+        if (!bitmap_is_frame_used(f)) {
+            bitmap_set(f);
+            return (void*)(uintptr_t)(f * PAGE_SIZE);
         }
     }
 
@@ -97,8 +97,8 @@ void* pmm_alloc_frame()
 
 void pmm_free_frame(void* addr)
 {
-    const uint64_t page = (uintptr_t)addr / PAGE_SIZE;
+    const uint64_t frame = (uintptr_t)addr / PAGE_SIZE;
 
-    if (page < total_pages)
-        bitmap_clear(page);
+    if (frame < total_frames)
+        bitmap_clear(frame);
 }
