@@ -3,15 +3,19 @@
 #include "../drivers/printk.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
-rsdp_t parse_multiboot2(void* mbi)
+multiboot2_info_t parse_multiboot2(void* mbi)
 {
     uint32_t total_size = *(uint32_t*)mbi;
     printk("[MB2] total_size = %d bytes\n", total_size);
 
     struct multiboot_tag* tag = mb2_first_tag(mbi);
 
-    rsdp_t rsdp = { .version = RSDP_VERSION_NONE };
+    multiboot2_info_t info = {
+        .rsdp = { .version = RSDP_VERSION_NONE },
+        .mmap_count = 0,
+    };
 
     while (tag->type != MULTIBOOT_TAG_TYPE_END) {
         switch (tag->type) {
@@ -36,41 +40,45 @@ rsdp_t parse_multiboot2(void* mbi)
 
         case MULTIBOOT_TAG_TYPE_MMAP: {
             struct multiboot_tag_mmap* t = (struct multiboot_tag_mmap*)tag;
-            printk("[MB2] memory map:\n");
 
-            uint32_t n_entries = (t->size - sizeof(*t)) / t->entry_size;
+            uint32_t num_entries = (t->size - sizeof(*t)) / t->entry_size;
 
-            for (uint32_t i = 0; i < n_entries; i++) {
-                struct multiboot_mmap_entry* e =
+            for (uint32_t i = 0; i < num_entries; i++) {
+                struct multiboot_mmap_entry* entry =
                     (struct multiboot_mmap_entry*)((uint8_t*)t->entries + i * t->entry_size);
 
-                printk(" %p - %p len %p (%s)\n", e->addr, (e->addr + e->len), e->len, mmap_type_str(e->type));
+                if (info.mmap_count < MMAP_MAX_ENTRIES) {
+                    info.mmap[info.mmap_count].addr = entry->addr;
+                    info.mmap[info.mmap_count].len = entry->len;
+                    info.mmap[info.mmap_count].type = entry->type;
+                    info.mmap_count++;
+                }
             }
 
             break;
         }
-
-        case MULTIBOOT_TAG_TYPE_ACPI_NEW: {
-            struct multiboot_tag_new_acpi* t = (struct multiboot_tag_new_acpi*)tag;
-            printk("[MB2] ACPI 2.0 RSDP found\n");
-
-            rsdp.version = RSDP_VERSION_2;
-            rsdp.v2 = (rsdp2_t*)t->rsdp;
-
-            break;
-        }
-
-        case MULTIBOOT_TAG_TYPE_ACPI_OLD: {
-            struct multiboot_tag_old_acpi* t = (struct multiboot_tag_old_acpi*)tag;
-            printk("[MB2] ACPI 1.0 RSDP found\n");
-
-            if (rsdp.version == RSDP_VERSION_NONE) {
-                rsdp.version = RSDP_VERSION_1;
-                rsdp.v1 = (rsdp1_t*)t->rsdp;
-            }
-
-            break;
-        }
+            //
+            // case MULTIBOOT_TAG_TYPE_ACPI_NEW: {
+            //     struct multiboot_tag_new_acpi* t = (struct multiboot_tag_new_acpi*)tag;
+            //     printk("[MB2] ACPI 2.0 RSDP found\n");
+            //
+            //     info.rsdp.version = RSDP_VERSION_2;
+            //     info.rsdp.v2 = (rsdp2_t*)t->rsdp;
+            //
+            //     break;
+            // }
+            //
+            // case MULTIBOOT_TAG_TYPE_ACPI_OLD: {
+            //     struct multiboot_tag_old_acpi* t = (struct multiboot_tag_old_acpi*)tag;
+            //     printk("[MB2] ACPI 1.0 RSDP found\n");
+            //
+            //     if (info.rsdp.version == RSDP_VERSION_NONE) {
+            //         info.rsdp.version = RSDP_VERSION_1;
+            //         info.rsdp.v1 = (rsdp1_t*)t->rsdp;
+            //     }
+            //
+            //     break;
+            // }
 
         default:
             break;
@@ -79,5 +87,5 @@ rsdp_t parse_multiboot2(void* mbi)
         tag = mb2_next_tag(tag);
     }
 
-    return rsdp;
+    return info;
 }

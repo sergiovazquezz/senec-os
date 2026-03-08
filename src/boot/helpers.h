@@ -2,11 +2,20 @@
 #define MULTIBOOT_HELPERS_H
 
 #include "../cpu/acpi.h"
+#include "../memory/pmm.h"
 #include "multiboot2.h"
 
 #include <stdint.h>
 
-rsdp_t parse_multiboot2(void* mbi);
+#define MMAP_MAX_ENTRIES 64
+
+typedef struct {
+    rsdp_t rsdp;
+    mm_entry_t mmap[MMAP_MAX_ENTRIES];
+    uint32_t mmap_count;
+} multiboot2_info_t;
+
+multiboot2_info_t parse_multiboot2(void* mbi);
 
 static inline struct multiboot_tag* mb2_first_tag(void* mbi)
 {

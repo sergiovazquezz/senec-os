@@ -6,6 +6,7 @@
 #include "../cpu/gdt.h"
 #include "../cpu/idt.h"
 #include "../drivers/printk.h"
+#include "../memory/pmm.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -21,11 +22,13 @@ void kmain(uint32_t magic, void* mboot_info)
 
     printk("Hello from the kernel!\n");
 
-    rsdp_t rsdp = { .version = RSDP_VERSION_NONE };
+    multiboot2_info_t mb2 = { 0 };
     if (magic == MULTIBOOT2_BOOTLOADER_MAGIC)
-        rsdp = parse_multiboot2(mboot_info);
+        mb2 = parse_multiboot2(mboot_info);
 
-    acpi_init(rsdp);
+    pmm_init(mb2.mmap, mb2.mmap_count);
+
+    acpi_init(mb2.rsdp);
 
     tss_init();
 

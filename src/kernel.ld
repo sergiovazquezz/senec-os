@@ -68,6 +68,8 @@ SECTIONS
         __bss_end = .;
     }
 
+    __kernel_end = __bss_end - KERNEL_VMA;
+
     /DISCARD/ :
     {
         *(.comment)

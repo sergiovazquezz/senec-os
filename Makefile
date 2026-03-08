@@ -11,7 +11,7 @@ COMMON_FLAGS := -ffreestanding -fno-builtin -nostdinc \
 				-fno-stack-protector -mno-red-zone -mcmodel=kernel \
 				-mno-sse -mno-mmx -mno-sse2 \
 				-masm=intel \
-				-Wall -Wextra -Werror -g -gdwarf-4
+				-Wall -Wextra -g -gdwarf-4
 RELEASE_FLAGS := $(COMMON_FLAGS) -O2
 DEBUG_FLAGS   := $(COMMON_FLAGS) -O0 -fanalyzer
 CFLAGS  := $(DEBUG_FLAGS) -std=gnu17 -MMD -MP

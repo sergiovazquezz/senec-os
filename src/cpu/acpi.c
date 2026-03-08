@@ -68,7 +68,7 @@ static acpi_sdt_header_t* acpi_find_table_xsdt(xsdt_t* x, size_t num_items, cons
     for (size_t i = 0; i < num_items; i++) {
         acpi_sdt_header_t* h = (acpi_sdt_header_t*)P2V(x->entries[i]);
 
-        void* result = check_table(h, sig);
+        acpi_sdt_header_t* result = check_table(h, sig);
 
         if (result)
             return result;
