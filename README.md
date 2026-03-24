@@ -6,9 +6,34 @@ A hobby x86-64 kernel written in C.
 
 Read `gcc-cross-compiler.md` for build requirements.
 
-```sh
+```bash
+# No optimizations
 make
+
+# With optimizations
+make release
+
+# Remove the build
+make clean
+```
+
+## Running
+
+```bash
+sudo pacman -S qemu-common qemu-system-x86 qemu-system-x86-firmware qemu-ui-gtk
+```
+
+```bash
+# No optimizations
 make run
+
+# With GUI
+make run-graphic
+
+# With optimizations
+make run-release
+
+# With GDB
 make debug
 ```
 
