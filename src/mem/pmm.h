@@ -11,7 +11,7 @@ typedef struct {
     uint32_t type;
 } mm_entry_t;
 
-void pmm_init(const mm_entry_t* entries, uint32_t count);
+void pmm_init(const mm_entry_t mmap_entries[], uint32_t count);
 void* pmm_alloc_frame();
 void pmm_free_frame(void* addr);
 

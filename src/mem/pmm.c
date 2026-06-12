@@ -35,15 +35,15 @@ static void* bump_alloc(uint64_t bytes)
     return ptr;
 }
 
-void pmm_init(const mm_entry_t entries[], uint32_t count)
+void pmm_init(const mm_entry_t mmap_entries[], uint32_t count)
 {
     uintptr_t max_addr = 0;
 
     for (uint32_t i = 0; i < count; i++) {
-        if (entries[i].type != MULTIBOOT_MEMORY_AVAILABLE)
+        if (mmap_entries[i].type != MULTIBOOT_MEMORY_AVAILABLE)
             continue;
 
-        const uint64_t end = entries[i].addr + entries[i].len;
+        const uint64_t end = mmap_entries[i].addr + mmap_entries[i].len;
 
         if (end > max_addr)
             max_addr = end;
@@ -61,11 +61,11 @@ void pmm_init(const mm_entry_t entries[], uint32_t count)
         bitmap[i] = 0xFF;
 
     for (uint32_t i = 0; i < count; i++) {
-        if (entries[i].type != MULTIBOOT_MEMORY_AVAILABLE)
+        if (mmap_entries[i].type != MULTIBOOT_MEMORY_AVAILABLE)
             continue;
 
-        const uintptr_t start = entries[i].addr;
-        const uintptr_t end = entries[i].addr + entries[i].len;
+        const uintptr_t start = mmap_entries[i].addr;
+        const uintptr_t end = mmap_entries[i].addr + mmap_entries[i].len;
 
         const uint64_t first_frame = (start + PAGE_SIZE - 1) / PAGE_SIZE;
         const uint64_t last_frame = end / PAGE_SIZE;

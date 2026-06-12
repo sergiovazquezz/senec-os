@@ -2,7 +2,7 @@
 #define MULTIBOOT_HELPERS_H
 
 #include "../cpu/acpi.h"
-#include "../memory/pmm.h"
+#include "../mem/pmm.h"
 #include "multiboot2.h"
 
 #include <stdint.h>

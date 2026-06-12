@@ -6,7 +6,7 @@
 #include "../cpu/gdt.h"
 #include "../cpu/idt.h"
 #include "../drivers/printk.h"
-#include "../memory/pmm.h"
+#include "../mem/pmm.h"
 
 #include <stdbool.h>
 #include <stdint.h>
